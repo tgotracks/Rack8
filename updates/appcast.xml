@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
  <channel><title>Rack8 by Tgo Tracks</title><description>Rack8 updates</description>
- <item><title>Rack8 0.6.0</title><sparkle:version>0.6.0</sparkle:version>
- <description>Created by Tgo Tracks. A bridge between producing and looping without a full DAW. Adds in-app updates and piano-roll selection, copy/paste, Ctrl+B duplication, Ctrl+Z undo and Ctrl+Alt+Z redo.</description>
+ <item><title>Rack8 0.7.1 - Session update</title><sparkle:version>0.7.1</sparkle:version>
+ <description>Launchpad Pro MK3 Session grid, bottom-button scene launching, immediate Stop session, sequencer-button isolation and improved MIDI Stop handling with transport receive status. See release notes for RC-505 settings and hardware testing limitations. Created by Tgo Tracks.</description>
  <sparkle:minimumSystemVersion>10.0</sparkle:minimumSystemVersion>
- <enclosure url="https://github.com/tgotracks/Rack8/releases/download/v0.6.0/Rack8-Setup-v0.6.0.exe" length="4109382" type="application/octet-stream" sparkle:edSignature="vG7htvzJiheRJnom1F8WCOKM5d4p3av61qfk8gRd6ZwMRqnzonNJan74L7Yd1lgxicAGI46I3jWH2WSc5xH9Bw==" sparkle:os="windows-x64" sparkle:installerArguments="/S /UPDATE" />
+ <enclosure url="https://github.com/tgotracks/Rack8/releases/download/v0.7.1/Rack8-Setup-v0.7.1.exe" length="4138434" type="application/octet-stream" sparkle:edSignature="IW/nIelCDHUm8rJ66OB7NCzoFUssCB/Xk/1SXMBqXZMQDhMmmMPKWwB9J4kPU7WHWEP883eougBUxCQ9sNguDw==" sparkle:os="windows-x64" sparkle:installerArguments="/S /UPDATE" />
  </item></channel>
 </rss>
