@@ -16,6 +16,8 @@ Rack8 is a standalone plugin host built for loopers, with the BOSS RC-505 MKII w
 
 ## Download
 
+[Read the update log](https://github.com/tgotracks/Rack8/blob/main/CHANGELOG.md) for new features, changes, bug fixes and known limitations in each release.
+
 [Download Rack8 v0.7.1 for Windows x64](https://github.com/tgotracks/Rack8/releases/tag/v0.7.1) — Session update, pre-release.
 
 Download and run **Rack8-Setup-v0.7.1.exe** once, then launch Rack8 from its shortcut. Existing installer-based versions can update from inside Rack8. Leave **Auto-update** enabled to receive published updates on launch, or use **Check for updates**. Updates install when Rack8 is idle; stop playback, live audio input and hardware MIDI output before updating.
