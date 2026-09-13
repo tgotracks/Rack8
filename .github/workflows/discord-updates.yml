@@ -1,0 +1,132 @@
+name: Rack Updates
+on:
+  push:
+    branches: [main]
+    paths: [updates/appcast.xml]
+  workflow_dispatch:
+    inputs:
+      confirm_not_announced:
+        description: I checked Discord and this feed version has not already been announced
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: rack8-discord-announcements
+  cancel-in-progress: false
+jobs:
+  announce:
+    if: github.repository == 'tgotracks/Rack8'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check published feed and announce
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        shell: python
+        run: |
+          import base64, json, os, re, sys, time
+          import urllib.request as http
+          import xml.etree.ElementTree as ET
+
+          REPO = 'tgotracks/Rack8'
+          ROOT = 'https://github.com/' + REPO
+          RAW = 'https://raw.githubusercontent.com/' + REPO + '/'
+          NS = '{http://www.andymatuschak.org/xml-namespaces/sparkle}'
+
+          def fetch(url):
+              req = http.Request(url, headers={'User-Agent': 'Rack8-Updates', 'Cache-Control': 'no-cache'})
+              with http.urlopen(req, timeout=20) as response:
+                  return response.read()
+
+          def feed_at(ref):
+              item = ET.fromstring(fetch(RAW + ref + '/updates/appcast.xml')).find('./channel/item')
+              if item is None:
+                  raise ValueError('Feed has no item')
+              version = item.findtext(NS + 'version', '')
+              if not re.fullmatch(r'\d+\.\d+\.\d+', version):
+                  raise ValueError('Invalid version')
+              return version, item.find('enclosure')
+
+          def main():
+              with open(os.environ['GITHUB_EVENT_PATH'], encoding='utf-8') as f:
+                  event = json.load(f)
+              if int(os.environ.get('GITHUB_RUN_ATTEMPT', '1')) != 1:
+                  sys.exit('Re-runs do not post: inspect Discord before a new manual dispatch.')
+              sha = os.environ['GITHUB_SHA']
+              version, enclosure = feed_at(sha)
+              if os.environ['GITHUB_EVENT_NAME'] == 'push':
+                  before = event.get('before', '')
+                  if not re.fullmatch(r'[0-9a-f]{40}', before) or set(before) == {'0'}:
+                      sys.exit('No previous feed to compare. Use a reviewed manual dispatch.')
+                  previous, _ = feed_at(before)
+                  if tuple(map(int, version.split('.'))) <= tuple(map(int, previous.split('.'))):
+                      print('No newer version; no Discord post.')
+                      return
+              elif event.get('inputs', {}).get('confirm_not_announced') not in (True, 'true'):
+                  sys.exit('Manual posting requires confirmation that this version is unannounced.')
+              for attempt in range(9):
+                  live_version, live_enclosure = feed_at('main')
+                  if live_version == version and live_enclosure.attrib == enclosure.attrib:
+                      break
+                  if tuple(map(int, live_version.split('.'))) > tuple(map(int, version.split('.'))):
+                      print('Superseded feed; no outdated announcement.')
+                      return
+                  if attempt == 8:
+                      raise ValueError('Public feed not ready')
+                  time.sleep(20)
+              tag = 'v' + version
+              release = json.loads(fetch('https://api.github.com/repos/' + REPO + '/releases/tags/' + tag))
+              if release.get('draft') or release.get('tag_name') != tag:
+                  raise ValueError('Release not published')
+              release_url = ROOT + '/releases/tag/' + tag
+              if release.get('html_url') != release_url:
+                  raise ValueError('Wrong release URL')
+              assets = {a['name']: a for a in release['assets'] if a.get('state') == 'uploaded'}
+              installer_name = 'Rack8-Setup-' + tag + '.exe'
+              installer = assets[installer_name]
+              source = assets['Rack8-Source-' + tag + '.zip']
+              assets['SHA256SUMS.txt']
+              expected_url = ROOT + '/releases/download/' + tag + '/' + installer_name
+              if enclosure.get('url') != expected_url or installer['browser_download_url'] != expected_url:
+                  raise ValueError('Feed installer mismatch')
+              if int(enclosure.get('length', '0')) != installer['size'] or source['size'] <= 0:
+                  raise ValueError('Asset size mismatch')
+              if len(base64.b64decode(enclosure.get(NS + 'edSignature', ''), validate=True)) != 64:
+                  raise ValueError('Missing update signature')
+              webhook = os.environ.get('DISCORD_WEBHOOK_URL', '').strip()
+              if not re.fullmatch(r'https://discord\.com/api/webhooks/\d+/[A-Za-z0-9_-]+', webhook):
+                  raise ValueError('Missing or invalid webhook secret')
+              target = json.loads(fetch(webhook))
+              if target.get('channel_id') != '1547877825497923614' or target.get('name') != 'Rack Updates':
+                  raise ValueError('Webhook destination or name changed')
+              body = release.get('body') or 'See the full release notes for changes and fixes.'
+              if len(body) > 3300:
+                  body = body[:3250].rsplit('\n', 1)[0] + '\n\nFull notes and limitations: ' + release_url
+              payload = {
+                  'username': 'Rack Updates',
+                  'allowed_mentions': {'parse': []},
+                  'content': '**Rack8 ' + tag + (' — pre-release' if release.get('prerelease') else '')
+                      + '**\nUpdate in Rack8 with **Check for updates**, or keep **Auto-update** enabled.'
+                      + '\nBack up sessions; stop playback, Audio in and hardware MIDI output before updating.',
+                  'embeds': [{'title': ('Rack8 ' + tag + ' — What changed')[:256],
+                      'url': release_url, 'description': body, 'color': 7186687,
+                      'fields': [{'name': 'Full update history', 'value': ROOT + '/blob/main/CHANGELOG.md'}],
+                      'footer': {'text': 'Tgo Tracks · TRX DSP'}}]
+              }
+              request = http.Request(webhook + '?wait=true', data=json.dumps(payload).encode('utf-8'),
+                  headers={'Content-Type': 'application/json', 'User-Agent': 'Rack8-Updates'}, method='POST')
+              # One POST only. An uncertain response is never retried automatically.
+              with http.urlopen(request, timeout=30) as response:
+                  posted = json.load(response)
+              if posted.get('channel_id') != target['channel_id'] or not posted.get('id'):
+                  raise ValueError('Discord confirmation missing; inspect channel before retrying')
+              print('Posted Rack8 ' + tag + ' as Rack Updates. Message ID: ' + posted['id'])
+
+          try:
+              main()
+          except Exception as error:
+              # Never print request URLs, response bodies or secrets in public logs.
+              print('Announcement failed (' + type(error).__name__ + '). Inspect the channel before a manual retry.')
+              sys.exit(1)
