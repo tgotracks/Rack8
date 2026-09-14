@@ -11,6 +11,7 @@ Rack8 is a standalone plugin host built for loopers, with the BOSS RC-505 MKII w
 - Reusable patterns and a piano roll with selection, group editing, copy/paste, duplication, undo and redo.
 - Live audio effects for your loop station’s output.
 - MIDI clock sync and dedicated CC/program-change lanes for hardware control.
+- Legacy 64-bit audio-plugin DLL hosting: choose **VST** in Plugins > SCAN / MANAGE. VST3 has its own scan option. Ordinary DLLs and 32-bit plugins are not supported.
 - In-app update checking and signed startup updates.
 - Launchpad Pro MK3 Session integration with an 8x8 reusable MIDI pattern launch grid.
 
@@ -18,9 +19,9 @@ Rack8 is a standalone plugin host built for loopers, with the BOSS RC-505 MKII w
 
 [Read the update log](https://github.com/tgotracks/Rack8/blob/main/CHANGELOG.md) for new features, changes, bug fixes and known limitations in each release.
 
-[Download Rack8 v0.7.1 for Windows x64](https://github.com/tgotracks/Rack8/releases/tag/v0.7.1) — Session update, pre-release.
+[Download Rack8 v0.8.0 for Windows x64](https://github.com/tgotracks/Rack8/releases/tag/v0.8.0) — Legacy plugins update, pre-release.
 
-Download and run **Rack8-Setup-v0.7.1.exe** once, then launch Rack8 from its shortcut. Existing installer-based versions can update from inside Rack8. Leave **Auto-update** enabled to receive published updates on launch, or use **Check for updates**. Updates install when Rack8 is idle; stop playback, live audio input and hardware MIDI output before updating.
+Download and run **Rack8-Setup-v0.8.0.exe** once, then launch Rack8 from its shortcut. Existing installer-based versions can update from inside Rack8. Leave **Auto-update** enabled to receive published updates on launch, or use **Check for updates**. Updates install when Rack8 is idle; stop playback, live audio input and hardware MIDI output before updating.
 
 In Launchpad Session mode, the eight buttons directly below the grid launch scenes. Shift + those buttons selects a rack; Shift + pad stops one track. Bottom-right **Stop Clip** and Rack8's **Stop session** stop immediately. Side buttons such as Steps no longer trigger scenes. Connect through the dedicated Pro MK3 DAW ports in Rack8's Session tab.
 
@@ -34,7 +35,7 @@ Enable **Select** and drag empty piano-roll space to select a group of notes. Mo
 
 ## Open source
 
-Rack8's original application code is released under **AGPLv3**; third-party components retain their own licences, including GPLv3 ASIO portions. Full licence texts, dependency sources, notices and build instructions are included in the matching [Rack8-Source-v0.7.1.zip source bundle](https://github.com/tgotracks/Rack8/releases/download/v0.7.1/Rack8-Source-v0.7.1.zip).
+Rack8's original application code is released under **AGPLv3**; third-party components retain their own licences, including GPLv3 ASIO portions. Full licence texts, dependency sources, notices and build instructions are included in the matching [Rack8-Source-v0.8.0.zip source bundle](https://github.com/tgotracks/Rack8/releases/download/v0.8.0/Rack8-Source-v0.8.0.zip).
 
 Use that specifically named source bundle to build this release. GitHub's automatically generated “Source code” archives contain this repository snapshot, not the complete application bundle.
 

@@ -6,6 +6,32 @@ A bridge between producing and live looping—without a full DAW. Built for loop
 
 Published updates are listed newest first. Each entry separates new features, changes, bug fixes and known limitations. Development builds are not presented as public releases.
 
+## v0.8.0 — Legacy plugins
+
+September 13, 2026 · Pre-release · [Download and release notes](https://github.com/tgotracks/Rack8/releases/tag/v0.8.0)
+
+### New features
+
+- Legacy 64-bit Windows audio-plugin DLL hosting alongside VST3, available in all eight slots on each of the eight racks.
+- Separate legacy **VST** and **VST3** scan options in Plugins > SCAN / MANAGE, plus a setup guide for DLL plugins.
+- Automatic release announcements from **Rack Updates** in Rack8 Hub's **#updates**, after a newer signed update feed goes live.
+- The update log and legacy-plugin guide are included with the installer and full-source download.
+
+### Fixes
+
+- Fixed legacy-host speaker buffer allocation and reserved pin-property storage for the FST interface.
+- Disabled the unsupported optional custom MIDI key-name query; the piano roll keeps normal note names.
+- Added an offline plugin diagnostic covering discovery, loading, state round-trip, MIDI/audio buffers and editor creation.
+
+### Limitations
+
+Electra 2.8.0, Vital DLL and Vital VST3 passed offline discovery, loading, state, MIDI/audio and editor-creation checks. All 187 Session/editor/playback checks passed on this build.
+
+- 64-bit audio-plugin DLLs only. Ordinary Windows DLLs and 32-bit plugins are not supported; no 32-bit bridge is included.
+- Plugins need their own complete installation and licence. Plugin-specific crashes, missing content or activation problems are not repaired by Rack8.
+- Legacy compatibility uses the GPLv3+ FST interface and is not a claim of Steinberg certification. Individual plugins and presets need testing before live use.
+- RC-505 and Launchpad hardware limitations from v0.7.1 still apply. This update does not claim to fix Electra's independently reported reinstall/crash issue.
+
 ## v0.7.1 — Session update
 
 September 11, 2026 · Pre-release · [Download and full release notes](https://github.com/tgotracks/Rack8/releases/tag/v0.7.1)
